@@ -3,7 +3,10 @@ import os
 import time
 import numpy as np
 import datetime
-from DigiCam.Camera import Camera
+import gphoto2 as gp
+
+#from DigiCam.Camera import Camera
+#import winsound
 
 """ ///////// CONSTANTS ///////// """
 
@@ -37,11 +40,25 @@ def take_pictureW():
 
 def take_picture():
     print ("[INFO] Taking picture")
+    camera = gp.Camera()
+    camera.init()
+    
+    file_path = camera.capture(gp.GP_CAPTURE_IMAGE)
+    print('Camera file path: {0}/{1}'.format(file_path.folder, file_path.name))
+    target = os.path.join(os.getcwd(), "capture_0.jpg")
+    print('Copying image to', target)
+    camera_file = camera.file_get(
+        file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
+    camera_file.save(target)
+    camera.exit()
+    #img = cv2.imread('testing_0.jpg')
+     #cv2.imshow('image',img)
+
 
 
 def loop():
     global start
-    countdown = 5
+    countdown = 4
 
     while True:
 
@@ -58,7 +75,8 @@ def loop():
                 else:
                     take_picture()
                 background= cv2.imread('background.png',-1)
-                img= cv2.imread('D:\\output\\testing_0.jpg',-1)
+                target = os.path.join(os.getcwd(), "capture_0.jpg")
+                img= cv2.imread(target,-1)
                 b_channel, g_channel, r_channel = cv2.split(img)
 
                 alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
@@ -160,6 +178,9 @@ def process_click(event, x, y,flags, params):
 def main():
     global button_pos
     print("[INFO] Running PhotoBooth")
+
+
+    
 
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_FULLSCREEN)
     cv2.setWindowTitle(WINDOW_NAME, WINDOW_NAME)
