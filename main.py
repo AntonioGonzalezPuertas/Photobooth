@@ -58,7 +58,7 @@ def take_picture():
 
 def loop():
     global start
-    countdown = 4
+    countdown = 5
 
     while True:
 
