@@ -4,6 +4,7 @@ import time
 import numpy as np
 import datetime
 import gphoto2 as gp
+import pyglet
 
 #from DigiCam.Camera import Camera
 #import winsound
@@ -58,7 +59,7 @@ def take_picture():
 
 def loop():
     global start
-    countdown = 5
+    countdown = 2
 
     while True:
 
@@ -87,6 +88,7 @@ def loop():
                 posx=int(background.shape[1]/2 - background.shape[1]/4)
                 posy=int(background.shape[0]/2 - background.shape[0]/4)
                 showImage(background,i,(posx,posy))
+                #os.system("lp capture_0.jpg")
                 start=False
                 countdown=5
 
@@ -180,10 +182,11 @@ def main():
     print("[INFO] Running PhotoBooth")
 
 
-    
 
-    cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_FULLSCREEN)
-    cv2.setWindowTitle(WINDOW_NAME, WINDOW_NAME)
+    cv2.namedWindow(WINDOW_NAME,cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    os.system("unclutter -idle 0 &")
 
     background= cv2.imread('background.png',-1)
     bg_height, bg_width, _ = background.shape
@@ -205,7 +208,7 @@ def main():
 
     # close any open windows
     cv2.destroyAllWindows()
-
+    os.system("unclutter -idle 1 &")
 
 if __name__ == '__main__':
     main()
