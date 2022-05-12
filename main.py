@@ -4,7 +4,8 @@ import time
 import numpy as np
 import datetime
 import gphoto2 as gp
-import pyglet
+import io
+from PIL import Image
 
 #from DigiCam.Camera import Camera
 #import winsound
@@ -61,8 +62,21 @@ def loop():
     global start
     countdown = 2
 
+    camera = gp.check_result(gp.gp_camera_new())
+    gp.check_result(gp.gp_camera_init(camera))
+    background= cv2.imread('background.png',-1)
+
     while True:
 
+
+        camera_file = gp.check_result(gp.gp_camera_capture_preview(camera))
+        file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
+
+        image = Image.open(io.BytesIO(file_data))
+        rgb = np.array(image)
+        # Convert RGB to BGR
+        rgba = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGBA)
+        showImage(background,rgba,(0,0))
         if start:
             if countdown >= 0:
                 print(countdown)
@@ -183,10 +197,11 @@ def main():
 
 
 
+
     cv2.namedWindow(WINDOW_NAME,cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-    os.system("unclutter -idle 0 &")
+    #os.system("unclutter -idle 0 &")
 
     background= cv2.imread('background.png',-1)
     bg_height, bg_width, _ = background.shape
@@ -196,12 +211,12 @@ def main():
 
     offset =(280,80)
 
-    showImage(background,img,(offset[0],offset[1]))
+    #showImage(background,img,(offset[0],offset[1]))
     button_pos = [offset[0], offset[1],offset[0]+img_width,offset[1]+img_height]
 
 
 
-    cv2.setMouseCallback(WINDOW_NAME, process_click)
+    #cv2.setMouseCallback(WINDOW_NAME, process_click)
 
 
     loop()
