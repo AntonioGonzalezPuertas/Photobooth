@@ -46,7 +46,7 @@ class CameraPB(threading.Thread):
 
         file_path = camera.capture(gp.GP_CAPTURE_IMAGE)
         print('Camera file path: {0}/{1}'.format(file_path.folder, file_path.name))
-        target = os.path.join(os.getcwd(), "/home/pi/PhotoBooth/capture_0.jpg")
+        target = os.path.join(os.getcwd(), "/home/pi/Photobooth/capture_0.jpg")
         print('Copying image to', target)
         camera_file = camera.file_get(
             file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
