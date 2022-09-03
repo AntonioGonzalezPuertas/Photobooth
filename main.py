@@ -46,7 +46,7 @@ class CameraPB(threading.Thread):
 
         file_path = camera.capture(gp.GP_CAPTURE_IMAGE)
         print('Camera file path: {0}/{1}'.format(file_path.folder, file_path.name))
-        target = os.path.join(os.getcwd(), "/home/pi/PhotoBooth/capture_0.jpg")
+        target = os.path.join(os.getcwd(), "/home/pi/Photobooth/capture_0.jpg")
         print('Copying image to', target)
         camera_file = camera.file_get(
             file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
@@ -118,7 +118,7 @@ class CameraPB(threading.Thread):
     def run(self):
         global start, interval,count_down, preview_on
 
-        print("[INFO] Running PhotoBooth")
+        print("[INFO] Running Photobooth")
 
         cv2.namedWindow(WINDOW_NAME,cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
@@ -176,14 +176,14 @@ class CameraPB(threading.Thread):
                         start=False
 
                         self.take_picture()
-                        target = os.path.join(os.getcwd(), "/home/pi/PhotoBooth/capture_0.jpg")
-                        os.system('cp /home/pi/PhotoBooth/capture_0.jpg /media/pi/AntonioGP/photos/' + str(int(time.time())) + '.jpg')
+                        target = os.path.join(os.getcwd(), "/home/pi/Photobooth/capture_0.jpg")
+                        os.system('cp /home/pi/Photobooth/capture_0.jpg /media/pi/AntonioGP1/photos/' + str(int(time.time())) + '.jpg')
                         img= cv2.imread(target,-1)
                         b_channel, g_channel, r_channel = cv2.split(img)
                         alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
                         img_BGRA = cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
 
-                        cv2.imwrite('/home/pi/PhotoBooth/image.jpg',img_BGRA)
+                        cv2.imwrite('/home/pi/Photobooth/image.jpg',img_BGRA)
 
                         image_flip= cv2.flip(img_BGRA, 1)
                         print(image_flip.shape[0],image_flip.shape[1])
@@ -196,7 +196,7 @@ class CameraPB(threading.Thread):
 
 
 
-                        cv2.imwrite('/home/pi/PhotoBooth/image.jpg',img_BGRA)
+                        cv2.imwrite('/home/pi/Photobooth/image.jpg',img_BGRA)
 
                         i= cv2.resize(img_BGRA,(int(background.shape[1]/1.5),int(background.shape[0]/1.5)))
                         posx=330
@@ -255,7 +255,7 @@ def get_updates():
 
 @app.route('/1')
 def get_image():
-    filename = '/home/pi/PhotoBooth/image.jpg'
+    filename = '/home/pi/Photobooth/image.jpg'
 
     return send_file(filename, mimetype='image/jpg')
 
