@@ -177,7 +177,7 @@ class CameraPB(threading.Thread):
 
                         self.take_picture()
                         target = os.path.join(os.getcwd(), "/home/pi/PhotoBooth/capture_0.jpg")
-                        os.system('cp /home/pi/PhotoBooth/capture_0.jpg /media/pi/AntonioGP/photos/' + str(int(time.time())) + '.jpg')
+                        os.system('cp /home/pi/PhotoBooth/capture_0.jpg /media/pi/AntonioGP1/photos/' + str(int(time.time())) + '.jpg')
                         img= cv2.imread(target,-1)
                         b_channel, g_channel, r_channel = cv2.split(img)
                         alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
