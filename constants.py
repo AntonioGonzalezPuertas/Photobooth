@@ -19,8 +19,8 @@ else:
 WINDOW_NAME = 'Photo Booth'
 COUNT_DOWN = 5
 
-i= cv2.imread('/home/pi/PhotoBooth/AbbyFrame3.png',-1)
-i2= cv2.imread('/home/pi/PhotoBooth/AbbyFrame.png',-1)
+i= cv2.imread('/home/pi/Photobooth/AbbyFrame3.png',-1)
+i2= cv2.imread('/home/pi/Photobooth/AbbyFrame.png',-1)
 
 #background= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))
 
@@ -30,12 +30,12 @@ background2= cv2.resize(i2,(640,430))
 bgf= cv2.resize(i,(2144,1424))
 bgf2= cv2.resize(i2,(2144,1424))
 
-i= cv2.imread('/home/pi/PhotoBooth/bg3.png',-1)
+i= cv2.imread('/home/pi/Photobooth/bg3.png',-1)
 bg2= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))
 
-img_button= cv2.imread('/home/pi/PhotoBooth/start_button.png',-1)
+img_button= cv2.imread('/home/pi/Photobooth/start_button.png',-1)
 
-attendez= cv2.imread('/home/pi/PhotoBooth/attendez.png',-1)
+attendez= cv2.imread('/home/pi/Photobooth/attendez.png',-1)
 
 bg_height, bg_width, _ = background.shape
 img_height, img_width, _ = img_button.shape
