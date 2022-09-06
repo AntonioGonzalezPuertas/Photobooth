@@ -21,7 +21,7 @@ from flask import Flask, render_template, send_file
 start = False
 preview_on = True
 
-bg_choose = 1
+bg_choose = 0
 interval = 0
 count_down = COUNT_DOWN
 camera = gp.check_result(gp.gp_camera_new())
