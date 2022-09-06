@@ -167,7 +167,7 @@ class CameraPB(threading.Thread):
                     if count_down == 0:
                         #white_background = np.zeros([bg_height ,bg_width,1],dtype=np.uint8)
                         #white_background.fill(255)
-                        img_prev = attendez
+                        img_prev = flash_page
                         preview_on = False
 
 
@@ -176,32 +176,32 @@ class CameraPB(threading.Thread):
                         start=False
 
                         self.take_picture()
-                        target = os.path.join(os.getcwd(), "/home/pi/Photobooth/capture_0.jpg")
-                        os.system('cp /home/pi/Photobooth/capture_0.jpg /media/pi/AntonioGP1/photos/' + str(int(time.time())) + '.jpg')
+                        target = os.path.join(os.getcwd(), address + "capture_0.jpg")
+                        os.system('cp ' + address + 'capture_0.jpg /media/pi/AntonioGP1/photos/' + str(int(time.time())) + '.jpg')
                         img= cv2.imread(target,-1)
                         b_channel, g_channel, r_channel = cv2.split(img)
                         alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
                         img_BGRA = cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
 
-                        cv2.imwrite('/home/pi/Photobooth/image.jpg',img_BGRA)
+                        cv2.imwrite(address + 'image.jpg',img_BGRA)
 
                         image_flip= cv2.flip(img_BGRA, 1)
                         print(image_flip.shape[0],image_flip.shape[1])
 
                         if bg_choose == 0:
-                            img_BGRA= self.addImage(image_flip,bgf,(0,0))
+                            img_BGRA= self.addImage(image_flip,background_HR,(0,0))
 
                         else:
-                            img_BGRA= self.addImage(image_flip,bgf2,(0,0))
+                            pass
 
 
 
-                        cv2.imwrite('/home/pi/Photobooth/image.jpg',img_BGRA)
+                        cv2.imwrite(address + 'image.jpg',img_BGRA)
 
                         i= cv2.resize(img_BGRA,(int(background.shape[1]/1.5),int(background.shape[0]/1.5)))
                         posx=330
                         posy=30
-                        img_prev= self.addImage(bg2,i,(posx,posy))
+                        img_prev= self.addImage(scan_page,i,(posx,posy))
 
                         qr = qrcode.QRCode(
                             version=1,
@@ -255,8 +255,7 @@ def get_updates():
 
 @app.route('/1')
 def get_image():
-    filename = '/home/pi/Photobooth/image.jpg'
-
+    filename = address + 'image.jpg'
     return send_file(filename, mimetype='image/jpg')
 
 @app.route('/2')
