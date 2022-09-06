@@ -25,7 +25,7 @@ COUNT_DOWN = 5
 #background= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))
 
 
-bgf= cv2.resize(i,(2144,1424))
+#bgf= cv2.resize(i,(2144,1424))
 
 
 i= cv2.imread(address + '/frame/boda1.png',-1)
