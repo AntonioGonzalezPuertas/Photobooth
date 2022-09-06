@@ -28,15 +28,15 @@ COUNT_DOWN = 5
 #bgf= cv2.resize(i,(2144,1424))
 
 
-i= cv2.imread(address + '/frame/boda1.png',-1)
+i= cv2.imread(address + 'frame/boda1.png',-1)
 background= cv2.resize(i,(640,430))
 background_HR= cv2.resize(i,(2144,1424))
 
-i= cv2.imread(address + '/views/scan_page.png',-1)
+i= cv2.imread(address + 'views/scan_page.png',-1)
 scan_page= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))
-flash_page= cv2.imread(address + '/views/flash_page.png',-1)
+flash_page= cv2.imread(address + 'views/flash_page.png',-1)
 
-img_button= cv2.imread(address + '/images/start_button.png',-1)
+img_button= cv2.imread(address + 'images/start_button.png',-1)
 
 
 bg_height, bg_width, _ = background.shape
