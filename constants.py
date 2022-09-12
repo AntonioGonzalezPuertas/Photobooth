@@ -18,11 +18,11 @@ else:
     IS_WINDOWS = False
 
 WINDOW_NAME = 'Photo Booth'
-COUNT_DOWN = 5
+COUNT_DOWN = 2
 
 backgrounds_total= 4
-background=[backgrounds_total]
-background_HR=[backgrounds_total]
+background=[]
+background_HR=[]
 #background= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))
 
 
@@ -30,8 +30,9 @@ background_HR=[backgrounds_total]
 
 for num in range(backgrounds_total):
     i= cv2.imread(address + 'frames/boda/' + str(num+1) + '.png',-1)
-    background[num]= cv2.resize(i,(640,430))
-    background_HR[num]= cv2.resize(i,(2144,1424))
+    print(num)
+    background.append(cv2.resize(i,(640,430)))
+    background_HR.append(cv2.resize(i,(2144,1424)))
 
 i= cv2.imread(address + 'views/scan_page.png',-1)
 scan_page= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))

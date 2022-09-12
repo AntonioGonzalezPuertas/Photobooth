@@ -20,6 +20,7 @@ from flask import Flask, render_template, send_file
 """ ///////// Global ///////// """
 start = False
 preview_on = True
+autofocus =True
 
 bg_choose = 0
 interval = 0
@@ -35,26 +36,34 @@ class CameraPB(threading.Thread):
         self.board = 1
 
     def take_picture(self):
+        global autofocus
         print ("[INFO] Taking picture")
         #camera = gp.Camera()
         #camera.init()
-        config_widget = gp.gp_camera_get_single_config(camera, 'autofocusdrive')
-        config_widget = config_widget[1]
-        config_set_response = gp.gp_widget_set_value(config_widget, 1)
-        print('set response:', gp.gp_widget_get_value(config_widget))
-        gp.gp_camera_set_single_config(camera, 'autofocusdrive', config_widget)
+        try:
+            if autofocus:
+                print ("[INFO] Autofocus ON")
 
-        file_path = camera.capture(gp.GP_CAPTURE_IMAGE)
-        print('Camera file path: {0}/{1}'.format(file_path.folder, file_path.name))
-        target = os.path.join(os.getcwd(), "/home/pi/Photobooth/capture_0.jpg")
-        print('Copying image to', target)
-        camera_file = camera.file_get(
-            file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
-        camera_file.save(target)
-        camera.exit()
-        #img = cv2.imread('testing_0.jpg')
-        #cv2.imshow('image',img)
+                config_widget = gp.gp_camera_get_single_config(camera, 'autofocusdrive')
+                config_widget = config_widget[1]
+                config_set_response = gp.gp_widget_set_value(config_widget, 1)
+                print('set response:', gp.gp_widget_get_value(config_widget))
+                gp.gp_camera_set_single_config(camera, 'autofocusdrive', config_widget)
+                
+                autofocus = False
 
+            file_path = camera.capture(gp.GP_CAPTURE_IMAGE)
+            print('Camera file path: {0}/{1}'.format(file_path.folder, file_path.name))
+            target = os.path.join(os.getcwd(), "/home/pi/Photobooth/capture_0.jpg")
+            print('Copying image to', target)
+            camera_file = camera.file_get(
+                file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
+            camera_file.save(target)
+            camera.exit()
+            #img = cv2.imread('testing_0.jpg')
+            #cv2.imshow('image',img)
+        except:
+            pass
 
 
 
@@ -141,85 +150,92 @@ class CameraPB(threading.Thread):
             #schedule.run_pending()
 
             if preview_on:
-                camera_file = gp.check_result(gp.gp_camera_capture_preview(camera))
-                file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
+                try:
+                    camera_file = gp.check_result(gp.gp_camera_capture_preview(camera))
+                    file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
 
-                image = Image.open(io.BytesIO(file_data))
-                rgb = np.array(image)
-                # Convert RGB to BGR
-                rgba = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGBA)
-                image_flip= cv2.flip(rgba, 1)
-                img_prev= self.addImage(image_flip, background[bg_choose],(0,0))
+                    image = Image.open(io.BytesIO(file_data))
+                    rgb = np.array(image)
+                    # Convert RGB to BGR
+                    rgba = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGBA)
+                    image_flip= cv2.flip(rgba, 1)
+                    img_prev= self.addImage(image_flip, background[bg_choose],(0,0))
+                except:
+                    pass
+            try:
+                if start:
+                    
+                    counting = time.time() - interval
+                    if counting >1:
+                        print (count_down)
+                        #showText(background,str(count_down),(300,280))
+                        cv2.putText(img_prev,str(count_down),org=(300,280), fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale= 8,color=(255,255,255))
+                        interval = time.time()
+
+                        if count_down == 0:
+                            #white_background = np.zeros([bg_height ,bg_width,1],dtype=np.uint8)
+                            #white_background.fill(255)
+                            img_prev = flash_page
+                            preview_on = False
+
+
+                        if count_down<0:
+                            count_down=COUNT_DOWN
+                            start=False
+
+                            self.take_picture()
+                            target = os.path.join(os.getcwd(), address + "capture_0.jpg")
+                            os.system('cp ' + address + 'capture_0.jpg /media/pi/AntonioGP1/photos/' + str(int(time.time())) + '.jpg')
+                            img= cv2.imread(target,-1)
+                            b_channel, g_channel, r_channel = cv2.split(img)
+                            alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
+                            img_BGRA = cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
+
+                            cv2.imwrite(address + 'image.jpg',img_BGRA)
+
+                            image_flip= cv2.flip(img_BGRA, 1)
+                            print(image_flip.shape[0],image_flip.shape[1])
+
+                            img_BGRA= self.addImage(image_flip,background_HR[bg_choose],(0,0))
+
+
+                            cv2.imwrite(address + 'image.jpg',img_BGRA)
+
+                            i= cv2.resize(img_BGRA,(int(background[bg_choose].shape[1]/1.5),int(background[bg_choose].shape[0]/1.5)))
+                            posx=330
+                            posy=30
+                            img_prev= self.addImage(scan_page,i,(posx,posy))
+
+                            qr = qrcode.QRCode(
+                                version=1,
+                                error_correction=qrcode.constants.ERROR_CORRECT_H,
+                                box_size=10,
+                                border=4,
+                            )
+                            qr.add_data('http://' + my_ip + ':5000/1')
+                            qr.make(fit=True)
+                            img = qr.make_image(fill_color="black", back_color="white").convert('RGB')
+                            b_channel, g_channel, r_channel = cv2.split(np.array(img))
+
+                            alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
+
+                            img_BGRA = cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
+                            icode= cv2.resize(img_BGRA,(200,200))
+
+                            img_prev= self.addImage(img_prev,icode,(500,240))
+
+
+                        count_down -=1
+                    
+                else:
+                    if preview_on:
+                        img_prev= self.addImage(img_prev,img_button,(250,230))
+
+                cv2.imshow(WINDOW_NAME, img_prev)
+
+            except:
+                pass
             
-            if start:
-                counting = time.time() - interval
-                if counting >1:
-                    print (count_down)
-                    #showText(background,str(count_down),(300,280))
-                    cv2.putText(img_prev,str(count_down),org=(300,280), fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale= 8,color=(255,255,255))
-                    interval = time.time()
-
-                    if count_down == 0:
-                        #white_background = np.zeros([bg_height ,bg_width,1],dtype=np.uint8)
-                        #white_background.fill(255)
-                        img_prev = flash_page
-                        preview_on = False
-
-
-                    if count_down<0:
-                        count_down=COUNT_DOWN
-                        start=False
-
-                        self.take_picture()
-                        target = os.path.join(os.getcwd(), address + "capture_0.jpg")
-                        os.system('cp ' + address + 'capture_0.jpg /media/pi/AntonioGP1/photos/' + str(int(time.time())) + '.jpg')
-                        img= cv2.imread(target,-1)
-                        b_channel, g_channel, r_channel = cv2.split(img)
-                        alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
-                        img_BGRA = cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
-
-                        cv2.imwrite(address + 'image.jpg',img_BGRA)
-
-                        image_flip= cv2.flip(img_BGRA, 1)
-                        print(image_flip.shape[0],image_flip.shape[1])
-
-                        img_BGRA= self.addImage(image_flip,background_HR[bg_choose],(0,0))
-
-
-                        cv2.imwrite(address + 'image.jpg',img_BGRA)
-
-                        i= cv2.resize(img_BGRA,(int(background[bg_choose].shape[1]/1.5),int(background[bg_choose].shape[0]/1.5)))
-                        posx=330
-                        posy=30
-                        img_prev= self.addImage(scan_page,i,(posx,posy))
-
-                        qr = qrcode.QRCode(
-                            version=1,
-                            error_correction=qrcode.constants.ERROR_CORRECT_H,
-                            box_size=10,
-                            border=4,
-                        )
-                        qr.add_data('http://' + my_ip + ':5000/1')
-                        qr.make(fit=True)
-                        img = qr.make_image(fill_color="black", back_color="white").convert('RGB')
-                        b_channel, g_channel, r_channel = cv2.split(np.array(img))
-
-                        alpha_channel = np.ones(b_channel.shape, dtype=b_channel.dtype) * 255  #creating a dummy alpha channel image.
-
-                        img_BGRA = cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
-                        icode= cv2.resize(img_BGRA,(200,200))
-
-                        img_prev= self.addImage(img_prev,icode,(500,240))
-
-
-                    count_down -=1
-            else:
-                if preview_on:
-                    img_prev= self.addImage(img_prev,img_button,(250,230))
-
-            cv2.imshow(WINDOW_NAME, img_prev)
-
-
             key = cv2.waitKey(1) & 0xFF
 
             # if the `q` key was pressed, break from the loop
@@ -259,13 +275,19 @@ def starting():
 def changing():
     global bg_choose
     
-    if bg_chosse == 4:
-        bg_chose=0
+    if bg_choose == 3:
+        bg_choose=0
     else:
         bg_choose += 1
 
     return "<p>Changed!</p>"
 
+@app.route('/autofocus')
+def autofocus():
+    global autofocus
+    autofocus = not autofocus
+
+    return "<p>Autofocus Changed!</p>"
 
 # def take_pictureW():
 #     print ("[INFO] Taking picture W")
