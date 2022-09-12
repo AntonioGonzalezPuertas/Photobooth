@@ -20,17 +20,18 @@ else:
 WINDOW_NAME = 'Photo Booth'
 COUNT_DOWN = 5
 
-
-
+backgrounds_total= 4
+background=[backgrounds_total]
+background_HR=[backgrounds_total]
 #background= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))
 
 
 #bgf= cv2.resize(i,(2144,1424))
 
-
-i= cv2.imread(address + 'frames/boda1.png',-1)
-background= cv2.resize(i,(640,430))
-background_HR= cv2.resize(i,(2144,1424))
+for num in range(backgrounds_total):
+    i= cv2.imread(address + 'frames/boda/' + (num+1) + '.png',-1)
+    background[num]= cv2.resize(i,(640,430))
+    background_HR[num]= cv2.resize(i,(2144,1424))
 
 i= cv2.imread(address + 'views/scan_page.png',-1)
 scan_page= cv2.resize(i,(int(i.shape[1]/1.5),int(i.shape[0]/1.7)))
@@ -39,7 +40,7 @@ flash_page= cv2.imread(address + 'views/flash_page.png',-1)
 img_button= cv2.imread(address + 'images/start_button.png',-1)
 
 
-bg_height, bg_width, _ = background.shape
+bg_height, bg_width, _ = background[0].shape
 img_height, img_width, _ = img_button.shape
 
 offset =(280,300)

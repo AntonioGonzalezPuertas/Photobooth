@@ -149,13 +149,8 @@ class CameraPB(threading.Thread):
                 # Convert RGB to BGR
                 rgba = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGBA)
                 image_flip= cv2.flip(rgba, 1)
-                if bg_choose == 0:
-                    img_prev= self.addImage(image_flip, background,(0,0))
-                else:
-                    img_prev= self.addImage(image_flip, background2,(0,0))
-
-
-
+                img_prev= self.addImage(image_flip, background[bg_choose],(0,0))
+            
             if start:
                 counting = time.time() - interval
                 if counting >1:
@@ -188,17 +183,12 @@ class CameraPB(threading.Thread):
                         image_flip= cv2.flip(img_BGRA, 1)
                         print(image_flip.shape[0],image_flip.shape[1])
 
-                        if bg_choose == 0:
-                            img_BGRA= self.addImage(image_flip,background_HR,(0,0))
-
-                        else:
-                            pass
-
+                        img_BGRA= self.addImage(image_flip,background_HR[bg_choose],(0,0))
 
 
                         cv2.imwrite(address + 'image.jpg',img_BGRA)
 
-                        i= cv2.resize(img_BGRA,(int(background.shape[1]/1.5),int(background.shape[0]/1.5)))
+                        i= cv2.resize(img_BGRA,(int(background[bg_choose].shape[1]/1.5),int(background[bg_choose].shape[0]/1.5)))
                         posx=330
                         posy=30
                         img_prev= self.addImage(scan_page,i,(posx,posy))
@@ -268,10 +258,11 @@ def starting():
 @app.route('/3')
 def changing():
     global bg_choose
-    if bg_choose == 0:
-        bg_choose =1
+    
+    if bg_chosse == 4:
+        bg_chose=0
     else:
-        bg_choose = 0
+        bg_choose += 1
 
     return "<p>Changed!</p>"
 
