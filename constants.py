@@ -18,7 +18,7 @@ else:
     IS_WINDOWS = False
 
 WINDOW_NAME = 'Photo Booth'
-COUNT_DOWN = 2
+COUNT_DOWN = 5
 
 backgrounds_total= 4
 background=[]
